@@ -1,0 +1,24 @@
+判断常用键
+{
+GetAxis("Horizontal")；//对应键盘上的A键和D键 或←键和→键
+
+GetAxis("Vertical"); //对应键盘上的W键和S键 或↑键和↓键
+
+GetAxis("Mouse X"); //对应X方向上鼠标的移动，在移动设备上也可以这样
+
+GetAxis("Mouse Y"); //对应Y方向上鼠标的移动，在移动设备上也可以这样
+
+GetAxis("Fire1"); //对应鼠标左键或left+Ctrl
+
+GetAxis("Fire2"); //对应鼠标右键或left+Alt
+
+GetAxis("Fire3"); //对应鼠标中键或left+shift
+
+GetAxisRaw("Fire1");
+
+//input.getAxis()和input.getAxisRaw()的区别
+
+input.getAxis()的返回值m从0渐变为1或者-1
+
+input.getAxisRaw()的返回值从0变成1或者-1，没有渐变
+}
