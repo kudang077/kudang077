@@ -5,33 +5,33 @@ using UnityEngine;
 public class NewBehaviourScript : MonoBehaviour
 {
     // Start is called before the first frame update
-   Rigidbody2D re20;
-    public float jump=3.8f;
-    public float jumphold=0.1f;
-    public float move = 5;
-    public LayerMask ground;
+   Rigidbody2D re20;     //刚体类型引用
+    public float jump=3.8f;  //跳跃初始速度
+    public float jumphold=0.1f; //加速度
+    public float move = 5;   //水平速度
+    public LayerMask ground;     //地面的碰撞
 
-    float xmove;
-    float jumptime = 0.0f;
-    bool isground;
+    float xmove;  //获取水平输入方向
+    float jumptime = 0.0f;   //判断连续跳用的
+    bool isground;     //判断在地面
     private void Start()
     {
-        re20 = GetComponent<Rigidbody2D>();
+        re20 = GetComponent<Rigidbody2D>();  //跳跃物体的钢体
     }
-    private void Update()
+    private void Update()   //每帧调用
     {
-        xmove = Input.GetAxis("Horizontal");
-        re20.velocity = new Vector2(xmove * move, re20.velocity.y);
-        isground = re20.IsTouchingLayers(ground);
-        if (Input.GetKeyDown(KeyCode.Space) && isground)
+        xmove = Input.GetAxis("Horizontal");     ////获取水平输入方向,Horizonta为a，d或←键和→键
+        re20.velocity = new Vector2(xmove * move, re20.velocity.y);   //水平速度=输入*水平速度
+        isground = re20.IsTouchingLayers(ground); //获取物体是否接触设定图层为地面的物体
+        if (Input.GetKeyDown(KeyCode.Space) && isground)  //在地面按下空格
         {
 
-            jumptime = Time.time + 0.2f;
-            re20.AddForce(new Vector2(0, jump), ForceMode2D.Impulse);
+            jumptime = Time.time + 0.2f;     //判断短时间不在地面
+            re20.AddForce(new Vector2(0, jump), ForceMode2D.Impulse);  //获得向上的力，跳跃
         }
-        if (Input.GetKeyDown(KeyCode.Space) && !isground && Time.time<jumptime)
+        if (Input.GetKeyDown(KeyCode.Space) && !isground && Time.time<jumptime)   //在空中迅速按下空格
         {
-            re20.AddForce(new Vector2(0,jumphold),ForceMode2D.Impulse);
+            re20.AddForce(new Vector2(0,jumphold),ForceMode2D.Impulse);   //获得向上的力，跳的更高
         }
     }
 }
