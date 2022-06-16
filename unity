@@ -32,6 +32,7 @@ public class NewBehaviourScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && !isground && Time.time<jumptime)   //在空中迅速按下空格
         {
             re20.AddForce(new Vector2(0,jumphold),ForceMode2D.Impulse);   //获得向上的力，跳的更高
+            
         }
     }
 }
