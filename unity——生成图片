@@ -1,0 +1,18 @@
+using UnityEngine;
+
+public class asd : MonoBehaviour
+{
+
+    public GameObject pre; //储存的图片
+    public Transform pool;  //对象自身
+
+    private void Update()
+    {
+        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);  //点击的屏幕坐标
+        if (Input.GetMouseButton(0))  //0是左键
+        {
+            Instantiate(pre, mouse, Quaternion.identity, pool); //克隆pre，位置为鼠标点击的地方,父对象为pool（不复制时资源一直刷新）
+        }
+    }
+
+}
