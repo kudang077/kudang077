@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class NewBehaviourScript : MonoBehaviour
+{
+    // Start is called before the first frame update
+   Rigidbody2D re20;
+    public float jump=3.8f;
+    public float jumphold=0.1f;
+    public float move = 5;
+    public LayerMask ground;
+
+    float xmove;
+    float jumptime = 0.0f;
+    bool isground;
+    private void Start()
+    {
+        re20 = GetComponent<Rigidbody2D>();
+    }
+    private void Update()
+    {
+        xmove = Input.GetAxis("Horizontal");
+        re20.velocity = new Vector2(xmove * move, re20.velocity.y);
+        isground = re20.IsTouchingLayers(ground);
+        if (Input.GetKeyDown(KeyCode.Space) && isground)
+        {
+
+            jumptime = Time.time + 0.2f;
+            re20.AddForce(new Vector2(0, jump), ForceMode2D.Impulse);
+        }
+        if (Input.GetKeyDown(KeyCode.Space) && !isground && Time.time<jumptime)
+        {
+            re20.AddForce(new Vector2(0,jumphold),ForceMode2D.Impulse);
+        }
+    }
+}
