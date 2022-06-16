@@ -1,0 +1,22 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Gun8 : MonoBehaviour
+{
+    public GameObject bulletasve;  //子弹图片
+    public float shoottime = 0.1f;  //0.1秒一发
+    public float nextshoot = 0f;   //开火冷却
+    public Transform gunkou;     //开火处
+
+    private void Update()
+    {
+        if (Input.GetMouseButton(0)&&Time.time>nextshoot)  //左键开火，设置冷却
+        {
+            nextshoot = Time.time + shoottime;  //冷却为0.1
+            GameObject bullet = Instantiate(bulletasve, gunkou.position, gunkou.rotation,gunkou); //子弹从枪口发出
+            bullet.GetComponent<Rigidbody2D>().velocity = new Vector2(20, 0);   //子弹速度20
+        }
+    }
+
+}
