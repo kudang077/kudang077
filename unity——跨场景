@@ -1,0 +1,88 @@
+跨场景移动物体
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;    //场景管理命名空间
+
+public class NewBehaviourScript : MonoBehaviour
+{
+    public string nameobj;                        //要转移到的空间，要先在生成设置里启用
+    public GameObject objettomove;                //转移的物体
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(Loadscene());          //开始协程
+        }
+    }
+    IEnumerator Loadscene()              //枚举器
+    { 
+        Scene curscene = SceneManager.GetActiveScene();                                                //储存当前场景
+        AsyncOperation asyload = SceneManager.LoadSceneAsync(nameobj, LoadSceneMode.Additive);         //异步加载场景
+        while (!asyload.isDone)
+        {
+            yield return null;                  //等，就硬等到加载完成
+        }
+        SceneManager.MoveGameObjectToScene(objettomove, SceneManager.GetSceneByName(nameobj));              //将指定物体移动到场景中
+        SceneManager.UnloadSceneAsync(curscene);                      //销毁之前的场景
+    }
+ 
+}
+
+跨场景共用摄像头
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;    //场景管理命名空间
+
+public class NewBehaviourScript : MonoBehaviour
+{
+    int undex;                                                    //索引
+    string text;
+    public static NewBehaviourScript ints;                       //给摄像头
+
+    private void Awake()                                         //挂了脚本必激活
+    {
+        if (ints != null && ints != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            ints = this;
+            DontDestroyOnLoad(ints);                               //加载其他场景时对象不被摧毁
+        }
+    }
+    void cameron()                              //模拟摄像机操作
+    {
+        if (Input.GetMouseButton(0))
+        {
+            text = "表示能滑动";
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            text = "";
+        }
+    }
+    private void Update()
+    {
+        undex = SceneManager.GetActiveScene().buildIndex;  //当前场景的索引
+        if (Input.GetMouseButton(1))
+        {
+            if (++undex > 2)
+            {
+                undex = 0;             //3个场景，超过返回场景1
+            }
+            SceneManager.LoadScene(undex);     //加载场景
+        }
+        cameron();
+    }
+    private void OnGUI()    //输出数据
+    {
+        GUI.Label(new Rect(20, 20, 500, 500),"场景:"+undex.ToString());  //第一个参数位置大小，第二个参数显示内容
+        GUI.Label(new Rect(20, 10, 500, 500), text);
+    }
+}
+
