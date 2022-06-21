@@ -1,0 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class obj : MonoBehaviour
+{
+    Rigidbody2D reg;
+    public float movespeed = 2;
+    public GameObject npc;
+
+    private void Start()
+    {
+        reg = GetComponent<Rigidbody2D>();
+
+    }
+    private void Update()
+    {
+        reg.velocity = new Vector2(Input.GetAxis("Horizontal")*movespeed, reg.velocity.y);                         //控制水平移动
+    }
+    private void OnCollisionEnter2D(Collision2D collision)                                  //碰撞触法
+    {
+        if (collision.gameObject.CompareTag("enemy"))
+        {
+            reg.AddForce(new Vector2(0, 5f), ForceMode2D.Impulse);                    //碰敌人物体自身跳起来
+        }
+        if (collision.gameObject.CompareTag("npc"))
+        {
+            npc.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 5f), ForceMode2D.Impulse);                     //被碰装的物体npc跳起来
+        }
+    }
+}
