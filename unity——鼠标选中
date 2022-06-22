@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class obj : MonoBehaviour
+{
+    SpriteRenderer sprite;                 //精灵渲染器引用
+
+    private void Start()
+    {
+        sprite = GetComponent<SpriteRenderer>();
+    }
+
+    private void OnMouseEnter()                  //鼠标移入时
+    {
+        sprite.color = new Vector4(0.8f, 0.8f, 0.8f, 1);
+    }
+
+    private void OnMouseExit()                   //鼠标移出时
+    {
+        sprite.color = new Vector4(1, 1, 1, 1);
+    }
+}
