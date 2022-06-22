@@ -1,0 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class obj : MonoBehaviour
+{
+    Vector2 mousepos,distant;
+    Rigidbody2D rig;
+
+    private void Start()
+    {
+        rig = GetComponent<Rigidbody2D>();
+    }
+    private void Update()
+    {
+        mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);                 //鼠标位置
+    }
+    private void OnMouseDown()                                                 //碰撞器范围按下鼠标
+    {
+        distant = new Vector2(transform.position.x, transform.position.y) - mousepos;        //获取鼠标与物体中心距离
+    }
+    private void OnMouseDrag()                                                        //碰撞器范围按住鼠标
+    {
+        transform.position = mousepos+distant;                                        //防止鼠标吸物体
+        rig.gravityScale = 0;                                                         //重力为0
+        rig.velocity = Vector2.zero;                                                  //速度为0
+    }
+    private void OnMouseUpAsButton()                                         //碰撞器内松开鼠标
+    {
+        rig.gravityScale = 3;                                               //重量为3，物品落下
+    }
+}
