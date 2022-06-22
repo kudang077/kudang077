@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class obj : MonoBehaviour
+{
+    Vector2 mouse, start;
+    Vector3 camer;
+    float distant;
+    Camera cam;
+
+    private void Start()
+    {
+        cam = GetComponent<Camera>();
+    }
+    private void Update()
+    {
+        mouse = Getmouse(Input.mousePosition);                          //输入的位置
+        if (Input.GetMouseButtonDown(0))                                //按下保存初始位置
+        {
+            start = mouse;
+            camer = transform.position;
+        }
+        if (Input.GetMouseButton(0))                                   //拖动
+        {
+            distant = mouse.x - start.x;
+            transform.position = new Vector3(camer.x - distant, transform.position.y, transform.position.z);    //移动摄像头实现
+        }
+    }
+    Vector2 Getmouse(Vector3 mousepos)                             //鼠标位置转换为世界坐标
+    {
+        float factor = Screen.height / cam.orthographicSize / 2;
+        float x = (mousepos.x - Screen.width / 2) / factor;
+        float y = (mousepos.y - Screen.height / 2) / factor;
+        return new Vector2(x, y);
+    }
+}
