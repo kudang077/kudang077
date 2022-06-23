@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class obj : MonoBehaviour
+{
+    bool iffollow;                          //跟随判断
+    float distant,xpeed=0f;
+    public float smoottime=0.4f;
+    public float camerspace = 1f;                //在这个值内物体移动相机不移动
+    public Transform follow;                   //跟随的物体
+
+    private void FixedUpdate()
+    {
+        distant = Mathf.Abs(follow.position.x - transform.position.x);                     //返回物体和相机距离的绝对值
+        if (distant > camerspace)                                                            //当物体移动出相机固定区域
+        {
+            iffollow = true;
+        }
+        if (iffollow)
+        {
+            transform.position = new Vector3(Mathf.SmoothDamp(transform.position.x, follow.position.x, ref xpeed, smoottime), transform.position.y, transform.position.z);
+                                                                         //摄像头x方向平滑移动，缓冲减速为0，缓冲时间为0.4
+            if (Mathf.Abs(follow.position.x - transform.position.x) < 0.02f)               //距离小时停止移动
+            {
+                iffollow = false;
+            }
+        }
+    }
+
+    private void OnDrawGizmos()               //每帧调用，用于辅助设置
+    {
+        Debug.DrawLine(new Vector3(camerspace + transform.position.x, 5, 0), new Vector3(camerspace + transform.position.x, -5, 0));               //画出相机固定的范围
+        Debug.DrawLine(new Vector3(-camerspace + transform.position.x, 5, 0), new Vector3(-camerspace + transform.position.x, -5, 0));
+
+    }
+}
