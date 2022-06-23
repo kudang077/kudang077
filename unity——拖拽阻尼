@@ -1,0 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class obj : MonoBehaviour
+{
+    Vector2 mousepos, dirvector,direction;
+    float distant,speed;
+    public float speedfactor=2f;
+    Rigidbody2D rig;
+
+    private void Start()
+    {
+        rig = GetComponent<Rigidbody2D>();
+    }
+
+    private void FixedUpdate()                      //固定帧更新。0.02秒执行一次
+    {
+        mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        dirvector = mousepos - new Vector2(transform.position.x, transform.position.y);           //鼠标与物体距离
+        direction = dirvector.normalized;                                                           //鼠标与物体向量方向
+        distant = dirvector.magnitude;                                                               //鼠标与物体向量长度
+        speed = distant * speedfactor;                                                               //速度，越近越慢
+        rig.velocity = direction* speed;                                                      //物体速度=方向乘速度
+
+        if (rig.velocity.magnitude < 0.1f)                                                      //物品速度很小时直接归零
+        {
+            rig.velocity = Vector2.zero;
+        }
+    }
+}
