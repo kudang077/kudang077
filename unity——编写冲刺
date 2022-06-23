@@ -1,0 +1,49 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class qw : MonoBehaviour
+{
+    Rigidbody2D rigg;
+    public float speed;                           //速度
+    public float jumpforce;                         //跳跃速度
+    public float dashforce;                         //冲刺速度
+    public LayerMask ground;
+    bool isdash;
+    float retime, direction;
+    public float dashtime;                             //冲刺时间
+
+    private void Start()
+    {
+        rigg = GetComponent<Rigidbody2D>();
+        rigg.gravityScale = 3;                 //重力为3
+    }
+
+    private void Update()
+    {
+        if (Input.GetAxisRaw("Horizontal") != 0)
+        {
+            direction = Input.GetAxisRaw("Horizontal");              //获得水平方向
+        }
+        if (Input.GetKeyDown(KeyCode.L))               //l冲刺
+        {
+            isdash = true;
+            retime = Time.time + dashtime;                       //计算冲刺的时间
+            rigg.velocity = new Vector2(direction * dashforce, 0);            //冲刺
+            rigg.gravityScale = 0;                                  //免疫重力
+        }
+        if (!isdash)
+        {
+            rigg.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * speed, rigg.velocity.y);         //平时移动
+        }
+        if (Time.time > retime)                                  //时间结束冲刺
+        {
+            isdash = false;
+            rigg.gravityScale = 3;
+        }
+        if (Input.GetKeyDown(KeyCode.Space) && rigg.IsTouchingLayers(ground))              //地面空格时跳跃
+        {
+            rigg.AddForce(Vector2.up * jumpforce, ForceMode2D.Impulse);
+        }
+    }
+}
