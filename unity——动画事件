@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class npc : MonoBehaviour
+{
+    AnimationClip clip;                           //动画片段
+
+    public void animprint(int num)
+    {
+        print("animation:" + num);                                    //模拟触发的动画事件
+    }
+
+    private void Start()
+    {
+        AnimationEvent anevent = new AnimationEvent();                    //创建动画事件
+        anevent.functionName = "animprint";                             //动画事件名和调运的函数一致
+        anevent.intParameter = 077;                                       //传方法中的参数
+        anevent.time = 0.5f;                                               //触发事件的时间
+        clip = GetComponent<Animator>().runtimeAnimatorController.animationClips[0];          //获得动画
+        clip.AddEvent(anevent);                                               //添加事件
+    }
+}
