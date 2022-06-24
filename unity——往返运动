@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class coin : MonoBehaviour
+{
+    public float leftrange, rightrange;
+    public float speed;
+    float direction = 1;
+
+    private void Update()
+    {
+        GetComponent<Rigidbody2D>().velocity = Vector2.right * speed * direction;                   //初始右
+        if (transform.position.x > rightrange)                            //到右边界时方向转左
+        {
+            direction = -1;
+        }
+        if (transform.position.x < leftrange)
+        {
+            direction = 1;
+        }
+    }
+}
