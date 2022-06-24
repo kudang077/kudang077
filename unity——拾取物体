@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class getcoin : MonoBehaviour
+{
+    int coincount=0, npccount=0;
+
+    private void OnTriggerEnter2D(Collider2D collision)                  //碰撞检测
+    {
+        if (collision.CompareTag("coin"))                             //碰撞标签coin的物体
+        { 
+            Destroy(collision.gameObject);                            
+            coincount += 1;                                              //摧毁coin，得分加一
+        }
+        if (collision.CompareTag("npc"))
+        {
+            Destroy(collision.gameObject);
+            npccount += 1;
+        }
+    }
+
+    private void OnGUI()                                                    //输出得分
+    {
+        GUI.skin.label.fontSize = 50;                                      //字体50
+        GUI.Label(new Rect(20, 20, 500, 500), "金币:" + coincount);
+        GUI.Label(new Rect(20, 100, 500, 500), "npc:" + npccount);
+    }
+}
