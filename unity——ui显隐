@@ -1,0 +1,47 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class panvel : MonoBehaviour
+{
+    public Image panel;                           //面版图像
+    public AnimationCurve showcurve;              //动画曲线显示显示速度
+    public AnimationCurve hiddencurve;            //动画曲线显示隐藏速度
+    public float animationspeed;
+
+    IEnumerator showpanel()                      //枚举
+    {
+        float time = 0;
+        while (panel.color.a < 1)                  //不透明度小于1时
+        {
+            panel.color = new Vector4(1, 1, 1, showcurve.Evaluate(time));  //随曲线变化的透明度
+            time += Time.deltaTime * animationspeed;    //时间等于时间加上一帧时间*动画速度
+            yield return null;                           //停一帧
+        }
+    }
+
+    IEnumerator hiddenpanel()
+    {
+        float time = 0;
+        while (panel.color.a > 0)
+        {
+            panel.color = new Vector4(1, 1, 1, hiddencurve.Evaluate(time));
+            time += Time.deltaTime * animationspeed;
+            yield return null;
+        }
+    }
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            StopAllCoroutines();            //停止协程
+            StartCoroutine(showpanel());
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            StopAllCoroutines();
+            StartCoroutine(hiddenpanel());
+        }
+    }
+}
