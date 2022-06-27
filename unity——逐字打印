@@ -1,0 +1,22 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class text : MonoBehaviour
+{
+    public TMP_Text testtext;           //储存文本
+    IEnumerator typetext(TMP_Text tmptext,string str,float speed)      //协程打印文本，内容为文本对象、内容、显示速度
+    {
+        int i = 0;
+        while (i <= str.Length)
+        {
+            tmptext.text = str.Substring(0, i++);
+            yield return new WaitForSeconds(speed);               //每个字等待设定的时间
+        }
+    }
+    private void Start()
+    {
+        StartCoroutine(typetext(testtext, "这是一个逐字打印",0.15f));
+    }
+}
