@@ -1,0 +1,18 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class button1 : MonoBehaviour
+{
+    public Button but;
+    public void startgame()              //申明开始游戏
+    {
+        print("start game");
+    }
+
+    private void Start()
+    {
+        but.onClick.AddListener(startgame);               //对按键添加事件监听器
+    }
+}
