@@ -1,0 +1,33 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class balljump : MonoBehaviour
+{
+    Rigidbody2D rig;
+    CircleCollider2D cir2d;
+    private void Start()
+    {
+        rig = GetComponent<Rigidbody2D>();
+        cir2d = GetComponent<CircleCollider2D>();
+    }
+    private void Update()
+    {
+        rig.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), rig.velocity.y);
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            rig.AddForce(Vector2.up*10, ForceMode2D.Impulse);                 //按w物体跳跃
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            cir2d.isTrigger = true;                //按s物体失去碰撞器落下
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)             //接触碰撞器触发
+    {
+        if (collision.gameObject.layer==8)                         //离开平台后恢复碰撞
+        {
+            cir2d.isTrigger = false;
+        }
+    }
+}
