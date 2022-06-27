@@ -16,3 +16,4 @@ public class button1 : MonoBehaviour
         but.onClick.AddListener(startgame);               //对按键添加事件监听器
     }
 }
+
