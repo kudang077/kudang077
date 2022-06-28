@@ -1,3 +1,4 @@
+按下按钮触发
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,5 +15,33 @@ public class button1 : MonoBehaviour
     private void Start()
     {
         but.onClick.AddListener(startgame);               //对按键添加事件监听器
+    }
+}
+
+按下键盘I和O触发
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class gamemassage : MonoBehaviour
+{
+    void pausegame()             //暂停时间
+    {
+        Time.timeScale = 0;
+    }
+    void startgame()                 //恢复时间
+    {
+        Time.timeScale = 1;
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            pausegame();
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            startgame();
+        }
     }
 }
