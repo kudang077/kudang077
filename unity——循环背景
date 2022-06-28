@@ -1,0 +1,30 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class map : MonoBehaviour
+{
+    GameObject maincam;                 //相机
+    float mapwidth = 70f;               //单个背景长
+    float totalwidth;                   //所有背景加一起长
+    int mapnum=4;                       //4个背景
+    private void Start()
+    {
+        maincam = GameObject.FindGameObjectWithTag("Main Camera");                //获取相机
+        totalwidth = mapwidth * mapnum;
+    }
+    private void Update()
+    {
+        Vector3 floormap = transform.position;                                        //储存背景位置信息
+        if (maincam.transform.position.x > transform.position.x + totalwidth / 2)     //相机位置大于总地图中点位置时
+        {
+            floormap.x += totalwidth;
+            transform.position = floormap;                                            //最左移动到最右，人物是往右走的
+        }
+        else if (maincam.transform.position.x < transform.position.x + totalwidth / 2)
+        {
+            floormap.x -= totalwidth;
+            transform.position = floormap;
+        }
+    }
+}
