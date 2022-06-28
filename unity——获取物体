@@ -1,0 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class findcoin : MonoBehaviour
+{
+    private void Start()
+    {
+        var tagget = GameObject.Find("coin");        //储存要获取的对象
+        if (tagget != null)
+        {
+            print("coin位置为:" + tagget.transform.position.x);
+        }
+    }
+}
