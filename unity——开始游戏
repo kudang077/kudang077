@@ -1,0 +1,18 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class scene1 : MonoBehaviour
+{
+    public Button button;      //为防止button被面版盖住，要添加canvas和graphic组件
+    void startgame()
+    {
+        SceneManager.LoadScene("scene");               //加载游戏场景
+    }
+    private void Start()
+    {
+        button.onClick.AddListener(startgame);                    //点击开始按键触法
+    }
+}
