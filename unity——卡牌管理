@@ -1,0 +1,43 @@
+生成卡牌脚本
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(menuName ="card")]                      //使其在创建面版中显示
+
+public class creatcard : ScriptableObject                 //脚本化对象
+{
+    public enum card                      //枚举定义卡牌类型，法术还是防御
+    {
+        MAGIC,
+        DEFEND,
+    }
+
+    public card cardtybe;                      //卡牌类型
+    public string describe;                     // 描述
+    public float cost, attack;                    //卡牌花费攻击力
+    public Sprite pu;                             //卡牌图片
+
+}
+
+卡牌控制脚本
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;           //文字命名空间
+
+public class cards : MonoBehaviour
+{
+    public creatcard carddate;
+    public SpriteRenderer pu;
+    public TextMeshPro cost;
+    public TextMeshPro attack;
+    public TextMeshPro describe;
+    private void Awake()
+    {
+        pu.sprite = carddate.pu;
+        describe.text = carddate.describe;
+        cost.text = carddate.cost.ToString();
+        attack.text = carddate . attack.ToString();
+    }
+}
