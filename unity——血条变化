@@ -1,0 +1,74 @@
+控制血条
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class healthcon : MonoBehaviour
+{
+    public static float healthpoint, healthfade;                         //血条和延迟虚血
+    float fadetimer;                                                     //延迟计时器
+    public float fadetime=1f;                                               //延迟时间
+    Coroutine damage = null;                                              //dot伤害协程
+    private void Awake()                                                    //初始生命
+    {
+        healthpoint = 100f;
+        healthfade = 100f;
+    }
+    void damageonce(float damagenum)                             //受伤方法，一次掉对应的血
+    {
+        healthpoint -= damagenum;
+    }
+    IEnumerator damageovertime(float damagenums,float duraiton)            //掉血和持续时间
+    {
+        float timer = 0;
+        while (healthpoint > 0 && timer < duraiton)
+        {
+            healthpoint -= damagenums * Time.deltaTime;
+            timer += Time.deltaTime;
+            yield return null;
+        }
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))                               //q键掉10血
+        {
+            fadetimer = 0;
+            damageonce(10);
+        }
+        else if (Input.GetKeyDown(KeyCode.E))                           //e键上dot掉血
+        {
+            if (damage != null)                                         //已经上了dot就重置
+            {
+                StopCoroutine(damage);
+                damage = StartCoroutine(damageovertime(5, 2));
+
+            }
+            else
+            {
+                damage = StartCoroutine(damageovertime(5, 2));
+            }
+        }
+        fadetimer += Time.deltaTime;
+        if (healthfade > healthpoint && fadetimer > fadetime)                //虚血
+        {
+            healthfade = Mathf.Lerp(healthfade, healthpoint, Time.deltaTime * 2);     //虚血持续后变的和实血一样   
+         }
+
+    }
+}
+
+血条百分比
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class health2 : MonoBehaviour
+{
+    public Image health, healthfade;
+    private void Update()
+    {
+        health.fillAmount = healthcon.healthpoint / 100f;                      //平滑递减
+        healthfade.fillAmount = healthcon.healthfade / 100f;
+    }
+}
