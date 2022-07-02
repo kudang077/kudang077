@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+public class panel : MonoBehaviour
+{
+    public GameObject slotPrefab;
+    GameObject[] items;
+    public int slotNum = 25;
+
+    private void Awake()
+    {
+        items = new GameObject[slotNum];                            //确定数组大小
+        for (int i = 0; i < slotNum; i++)
+        {
+            items[i] = transform.GetChild(i).gameObject;            //获取数组元素并重命名
+            items[i].name = "slot" + i;
+        }
+    }
+}
+
+
+#if UNITY_EDITOR//仅在编辑器中生效
+[CustomEditor(typeof(panel))]              //获取父类
+public class InventoryEditor : Editor
+{
+    public override void OnInspectorGUI()                    //重写父类
+    {
+        panel inventory = target as panel;                   //获取当前选择对象实例
+        if (GUILayout.Button("生成"))                        //创建并判断如果按下生成按键
+        {
+            var chileNum = Selection.activeTransform.childCount;                       //获取原有格子数量
+            for (int i = 0; i < chileNum; i++)
+            {
+                DestroyImmediate(Selection.activeTransform.GetChild(0).gameObject);    //清空原有的格子
+            }
+            for (int i = 0; i < inventory.slotNum; i++)
+            {
+                GameObject go = Instantiate(inventory.slotPrefab, Selection.activeTransform);       //根据新数量生成格子，并使格子作为子级
+            }
+        }
+        base.OnInspectorGUI();//原有的UI界面
+    }
+}
+#endif
+
