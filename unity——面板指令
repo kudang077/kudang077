@@ -1,0 +1,38 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+public class uio             //不继承类
+{
+   [InitializeOnLoadMethod]                    //初始化
+   static void init()
+    {
+        EditorApplication.hierarchyWindowItemOnGUI = delegate (int intid, Rect selsetrect)              //层级面版ui
+        {
+            if (Selection.activeObject && intid == Selection.activeObject.GetInstanceID())                //选中对象
+            {
+                float width = 50f;                                      //ui
+                float height = 20f;
+                selsetrect.x += selsetrect.width - 40f;
+                selsetrect.y += selsetrect.height - 18f;
+                selsetrect.width = width;
+                selsetrect.height = height;
+                if (GUI.Button(selsetrect, "rig"))                        //生成按键，名字rig
+                {
+                    GameObject gameobject = (GameObject)Selection.activeObject;           //获取游戏对象
+                    if (gameobject.GetComponent<PolygonCollider2D>() == null)             //判断有无组件，没有就添加
+                    {
+                        Undo.AddComponent(gameobject, typeof(PolygonCollider2D));
+                    }
+                    if (gameobject.GetComponent<Rigidbody2D>() == null)
+                    {
+                        Undo.AddComponent(gameobject, typeof(Rigidbody2D));
+                    }
+                    var rig = gameobject.GetComponent<Rigidbody2D>();                     //获取组件改数值
+                    rig.gravityScale = 2;
+                }
+            }
+        };
+    }
+}
