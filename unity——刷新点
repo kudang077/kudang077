@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class spawncard : MonoBehaviour
+{
+    public GameObject card;           //生成的物体
+    public float time;                //刷新间隔
+    private void Start()
+    {
+        if (time > 0)
+        {
+            InvokeRepeating("spawnobject", 0, time);          //根据间隔时间调用方法
+        }
+    }
+    void spawnobject()
+    {
+        if (card != null)
+        {
+            Instantiate(card, transform.position, Quaternion.identity);              //出生点刷新物体
+        }
+    }
+}
