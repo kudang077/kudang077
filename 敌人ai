@@ -1,0 +1,312 @@
+public interface istate             //状态接口
+{
+    void onenter();
+    void onupdate();
+    void onexit();
+
+}
+
+主程序
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+public enum statetype
+{
+    idle,patrol,chase,react,attck,hit,dead
+}
+[Serializable]
+public class Parameter                                       //管理属性的类
+{
+    public int health;
+    public float movespeed;
+    public float chasespeed;
+    public float idletime;
+    public Transform[] patrolpoints;
+    public Transform[] chasepoints;
+    public Animator animator;
+    public Transform target;
+    public bool canhit; 
+
+    public LayerMask targetlayer;
+    public Transform attckpoint;
+    public float attckarea;
+}
+public class fsm : MonoBehaviour
+{
+    public Parameter parameter;
+    public istate cur;
+    private Dictionary<statetype, istate> state = new Dictionary<statetype, istate>();
+
+    // Start is called before the first frame update
+    void Start()                                                                            //存ai行为
+    {
+        state.Add(statetype.idle, new idlestate(this));
+        state.Add(statetype.patrol, new patrolstate(this));
+        state.Add(statetype.chase, new chasestate(this));
+        state.Add(statetype.react, new reactstate(this));
+        state.Add(statetype.attck, new attckstate(this));
+        state.Add(statetype.hit, new hitstate(this));
+        state.Add(statetype.dead, new deadstate(this));
+        transitionstate(statetype.idle);                                                    //初始化第一个动作
+        parameter.canhit = true;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        cur.onupdate();                                                                                      //update调用每个状态的update
+        if (Input.GetMouseButtonDown(0) && parameter.canhit == true)                                         //攻击触发受击动画
+        {
+            transitionstate(statetype.hit);
+            parameter.health--;
+        }
+    }
+    public void transitionstate(statetype type)                                     //状态调用，之前有状态就先执行退出，该状态再赋值执行开始
+    {
+        if (cur != null)
+            cur.onexit();
+        cur = state[type];
+        cur.onenter();
+    }
+    public void flipto(Transform target)                                             //转向
+    {
+        if (target != null)
+        {
+            if (transform.position.x > target.position.x)
+            {
+                transform.localScale = new Vector3(-7, 7, 1);
+            }
+            else
+                transform.localScale = new Vector3(7, 7, 1);
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("player"))
+        {
+            parameter.target = collision.transform;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("player"))
+        {
+            parameter.target = null;
+        }
+    }
+    private void OnDrawGizmos()                                                       //判断攻击范围，一个球中心为attckpoint，半径为attckarea
+    {
+        Gizmos.DrawWireSphere(parameter.attckpoint.position, parameter.attckarea);
+    }
+}
+
+ai的状态控制
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class idlestate : istate                          //闲置
+{
+    private fsm manager;
+    private Parameter parameter;
+    private float timer;
+    public idlestate(fsm manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+    public void onenter()
+    {
+        parameter.animator.Play("idle");
+    }
+    public void onupdate()
+    {
+        if (parameter.target != null)
+            manager.transitionstate(statetype.react);
+        timer += Time.deltaTime;
+        if (timer > parameter.idletime)
+        {
+            manager.transitionstate(statetype.patrol);
+        }
+    }
+    public void onexit()
+    {
+        timer = 0;
+    }
+}
+public class patrolstate : istate                            //巡逻
+{
+    private fsm manager;
+    private Parameter parameter;
+    private int patrolposition;
+    public patrolstate(fsm manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+    public void onenter()
+    {
+        parameter.animator.Play("walk");
+    }
+    public void onupdate()
+    {
+        if (parameter.target != null)
+            manager.transitionstate(statetype.react);
+        manager.flipto(parameter.patrolpoints[patrolposition]);
+        manager.transform.position = Vector2.MoveTowards(manager.transform.position, parameter.patrolpoints[patrolposition].position, parameter.movespeed * Time.deltaTime);
+        if (Vector2.Distance(manager.transform.position, parameter.patrolpoints[patrolposition].position) < 1f)
+        {
+            manager.transitionstate(statetype.idle);
+        }
+    }
+    public void onexit()
+    {
+        patrolposition++;
+        if (patrolposition >= parameter.patrolpoints.Length)
+        {
+            patrolposition = 0;
+        }
+    }
+}
+public class chasestate : istate                    //追击
+{
+    private fsm manager;
+    private Parameter parameter;
+    public chasestate(fsm manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+    public void onenter()
+    {
+        parameter.animator.Play("walk");
+    }
+    public void onupdate()
+    {
+        manager.flipto(parameter.target);
+        if (parameter.target)
+        {
+            manager.transform.position = Vector2.MoveTowards(manager.transform.position, parameter.target.position, parameter.chasespeed * Time.deltaTime);
+        }
+        if (parameter.target == null || manager.transform.position.x < parameter.chasepoints[0].position.x || manager.transform.position.x > parameter.chasepoints[1].position.x)
+        {
+            manager.transitionstate(statetype.idle);
+        }
+        if (Physics2D.OverlapCircle(parameter.attckpoint.position, parameter.attckarea, parameter.targetlayer))
+        {
+            manager.transitionstate(statetype.attck);
+        }
+    }
+    public void onexit()
+    {
+
+    }
+}
+public class reactstate : istate                         //看见玩家反应
+{
+    private fsm manager;
+    private Parameter parameter;
+    private AnimatorStateInfo info;
+    public reactstate(fsm manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+    public void onenter()
+    {
+        parameter.animator.Play("run");
+    }
+    public void onupdate()
+    {
+        info = parameter.animator.GetCurrentAnimatorStateInfo(0);
+        if (info.normalizedTime >= 1f)
+        {
+            manager.transitionstate(statetype.chase);
+        }
+    }
+    public void onexit()
+    {
+
+    }
+}
+public class attckstate : istate                                      //攻击
+{
+    private fsm manager;
+    private Parameter parameter;
+    private AnimatorStateInfo info;
+    public attckstate(fsm manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+    public void onenter()
+    {
+        parameter.animator.Play("attck");
+    }
+    public void onupdate()
+    {
+        info = parameter.animator.GetCurrentAnimatorStateInfo(0);
+        if (info.normalizedTime > 0.95f)
+        {
+            manager.transitionstate(statetype.chase);
+        }
+    }
+    public void onexit()
+    {
+
+    }
+}
+public class hitstate : istate                                                //受击
+{
+    private fsm manager;
+    private Parameter parameter;
+    private AnimatorStateInfo info;
+    public hitstate(fsm manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+    public void onenter()
+    {
+         parameter.animator.Play("hit");
+    }
+    public void onupdate()
+    {
+        info = parameter.animator.GetCurrentAnimatorStateInfo(0);
+        if (info.normalizedTime > 0.95f)
+        {
+            manager.transitionstate(statetype.chase);
+        }
+        if (parameter.health <= 0)
+            manager.transitionstate(statetype.dead);
+    }
+    public void onexit()
+    {
+
+    }
+}
+public class deadstate : istate                                                  //死亡
+{
+    private fsm manager;
+    private Parameter parameter;
+    private AnimatorStateInfo info;
+    public deadstate(fsm manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+    public void onenter()
+    {
+        parameter.animator.Play("dead");
+        parameter.canhit = false;
+    }
+    public void onupdate()
+    {
+        
+    }
+    public void onexit()
+    {
+
+    }
+}
